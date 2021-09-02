@@ -1,0 +1,117 @@
+{% extends 'shop/basic.html' %}
+
+{% block title %}Tracker{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="col my-4">
+        <h2>Step 1 - Enter Your Order Id and Email Address to track your order</h2>
+        <form class="row g-3" method="POST" action="#" id="trackerForm">{% csrf_token %}
+            
+            <div class="col-md-4">
+              <label for="validationCustom02" class="form-label">Order Id</label>
+              <input type="number" class="form-control" id="orderId" name="orderId" required>
+              <div class="valid-feedback">
+                Looks good!
+              </div>
+            </div>
+            <div class="col-md-4">
+              <label for="validationCustomUsername" class="form-label">Email</label>
+              <div class="input-group has-validation">
+                <span class="input-group-text" id="inputGroupPrepend">@</span>
+                <input type="text" class="form-control" id="email" name="email" aria-describedby="inputGroupPrepend" required>
+                <div class="invalid-feedback">
+                  Please choose a email-id.
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <button class="btn btn-primary" type="submit">Track Order</button>
+            </div>
+        </form>
+    </div>
+    <div class="col my-4">
+        <h2>Order Status</h2>
+        <div>
+            <ol class="list-group list-group-numbered" id="items">
+                
+            </ol>
+        </div> 
+    </div>
+    <div class="col my-4">
+        <h2>Order Details</h2>
+        <div>
+            <ol class="list-group list-group-numbered" id="citems">
+                
+            </ol>
+        </div> 
+    </div>
+{% endblock %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>  
+
+
+{% block js %}
+<script>
+$('#trackerForm').submit(function(event) {
+    $('#items').empty();
+    var formData = {
+        'orderId': $('input[name=orderId]').val(),
+        'email': $('input[name=email]').val(),
+        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+    };
+    event.preventDefault();
+    $.ajax({
+            type: 'POST',
+            url: '/shop/tracker/',
+            data: formData,
+            encode: true
+        })
+        .done(function(data) {
+            console.log(data)
+            data = JSON.parse(data);
+            if (data["status"] == "success") {
+                updates = data["updates"];
+                for (i = 0; i < updates.length; i++) {
+                    let text = updates[i]['text'];
+                    let time = updates[i]['time'];
+                    mystr = `<li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                    <div class="fw-bold">${text}</div>
+                </div>
+                <span class="badge bg-primary rounded-pill">${time}</span>
+                </li>`
+                    $('#items').append(mystr);
+                }
+
+                cart = JSON.parse(data["itemsJson"]);
+            console.log(cart)
+            for (item in cart){
+                let name = cart[item][1];
+                let qty = cart[item][0];
+                myStr = `<li class="list-group-item d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">${name}</div>
+                        </div>
+                        <span class="badge bg-secondary rounded-pill">${qty}</span>
+                        </li>`
+                $('#citems').append(myStr);
+            }
+            } else {
+                mystr = `<li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                    <div class="fw-bold">Sorry, we are unable to fetch the item. Please make sure you entered the correct order Id and email.</div>
+                </div>
+                
+                </li>`
+                $('#items').append(mystr);
+            }
+            // fill in order Details
+            
+            
+        });
+    
+});
+</script>
+{% endblock %}
+

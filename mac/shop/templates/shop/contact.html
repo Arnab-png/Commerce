@@ -1,0 +1,46 @@
+{% extends 'shop/basic.html' %}
+
+{% block title %}Contact{% endblock %}
+
+{% block body %}
+
+<div class="container my-4">
+    <h3>Contact us regarding your queries</h3><br><br>
+    <form action="/shop/contact/" method="POST">{% csrf_token %}
+    <div class="input-group mb-4">
+        <span class="input-group-text" id="basic-addon1">Name</span>
+        <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" name="name">
+      </div>
+      
+      <div class="input-group mb-4">
+        <span class="input-group-text" id="basic-addon1">Email</span>  
+        <input type="email" class="form-control" placeholder="User email" aria-label="Recipient's username" aria-describedby="basic-addon2" name="email">
+        <span class="input-group-text" id="basic-addon2">@example.com</span>
+      </div>
+
+      <div class="input-group mb-4">
+        <span class="input-group-text" id="basic-addon1">Mobile</span>
+        <input type="tel" class="form-control" placeholder="Enter your contact number" aria-label="Username" aria-describedby="basic-addon1" name="phone">
+      </div>
+
+      
+      <div class="input-group">
+        <span class="input-group-text">Type your query/complaint</span>
+        <textarea class="form-control" id="desc" aria-label="With textarea" name="desc"></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-secondary my-5">Submit</button>
+      </form>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+  {% if thank %}
+  alert("Thanks for contacting Us. One service advison is assigned to you. He/She will soon contact with you.");
+  document.location = '/shop';
+  {% endif %}
+</script>
+
+{% endblock %}
